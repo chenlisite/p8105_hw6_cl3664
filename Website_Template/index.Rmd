@@ -1,7 +1,5 @@
 ---
-title: "Holy cow!"
+title: "Plotly and Shiny dashboard"
 ---
 
-### I have a webpage!
-
-And I can put all kinds of stuff on it!
+### 

@@ -21,12 +21,12 @@ Column {data-width=450}
 
 ### Sales by department
 
-```{r}
+```{r read}
 cart = read_csv("./data/instacart_train_data.csv.zip")
 
 ```
 
-```{r}
+```{r chartA}
 cart%>%
   filter(department != "missing")%>%
   group_by(department)%>%
@@ -44,7 +44,7 @@ Column {data-width=550}
 
 ### "Busy days" in a week
 
-```{r}
+```{r chartB}
 cart%>%
   filter(department != "missing")%>%
   mutate(order_dow = order_dow+1)%>%
@@ -58,7 +58,7 @@ cart%>%
 
 ### "Busy time" by department
 
-```{r}
+```{r chartC}
 cart%>%
   filter(department != "missing")%>%
   group_by(department)%>%

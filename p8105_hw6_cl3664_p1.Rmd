@@ -1,0 +1,69 @@
+---
+title: "Untitled"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(janitor)
+library(stringr)
+library(forcats)
+library(viridis)
+library(plotly)
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Sales by department
+
+```{r}
+cart = read_csv("./data/instacart_train_data.csv.zip")
+
+```
+
+```{r}
+cart%>%
+  filter(department != "missing")%>%
+  group_by(department)%>%
+  mutate(sales = n())%>%
+  distinct(department,sales)%>%
+  ungroup(department)%>%
+  mutate(department = fct_reorder(as.factor(department),sales))%>%
+  mutate(hover=str_c(department," Sales:$",sales))%>%
+  plot_ly(x = ~department, y = ~sales, type = "bar", color=~department, text=~hover, alpha = 0.5)
+```
+
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+cart%>%
+  group_by(product_name)%>%
+  mutate(sales = n())%>%
+  distinct(product_name,sales, days_since_prior_order)%>%
+  filter(sales>100)%>%
+  View()
+  ungroup(product_name)%>%
+  plot_ly(x=~days_since_prior_order, y=~sales, type = "scatter", mode = "line")
+```
+
+### "Busy time" by department
+
+```{r}
+cart%>%
+  filter(department != "missing")%>%
+  group_by(department)%>%
+  mutate(median_hour=median(order_hour_of_day))%>%
+  ungroup(department)%>%
+  mutate(department = fct_reorder(department,median_hour))%>%
+  plot_ly(x = ~department, y = ~order_hour_of_day, type = "box", color=~department, alpha = 0.5)
+```
+

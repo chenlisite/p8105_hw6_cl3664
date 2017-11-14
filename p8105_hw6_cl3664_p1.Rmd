@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Instacart Dashboard"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -16,7 +16,7 @@ library(viridis)
 library(plotly)
 ```
 
-Column {data-width=650}
+Column {data-width=450}
 -----------------------------------------------------------------------
 
 ### Sales by department
@@ -39,7 +39,7 @@ cart%>%
 ```
 
 
-Column {data-width=350}
+Column {data-width=550}
 -----------------------------------------------------------------------
 
 ### "Busy days" in a week
@@ -54,9 +54,7 @@ cart%>%
 ```
 
 
-```{r}
 
-```
 
 ### "Busy time" by department
 

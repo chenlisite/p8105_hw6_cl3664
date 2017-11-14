@@ -42,17 +42,20 @@ cart%>%
 Column {data-width=350}
 -----------------------------------------------------------------------
 
-### Chart B
+### "Busy days" in a week
 
 ```{r}
 cart%>%
-  group_by(product_name)%>%
+  filter(department != "missing")%>%
+  mutate(order_dow = order_dow+1)%>%
+  group_by(order_dow, department)%>%
   mutate(sales = n())%>%
-  distinct(product_name,sales, days_since_prior_order)%>%
-  filter(sales>100)%>%
-  View()
-  ungroup(product_name)%>%
-  plot_ly(x=~days_since_prior_order, y=~sales, type = "scatter", mode = "line")
+  plot_ly(x=~order_dow, y=~sales, type = "scatter", color = ~department, mode = "line")
+```
+
+
+```{r}
+
 ```
 
 ### "Busy time" by department

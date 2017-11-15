@@ -1,5 +1,5 @@
 ---
-title: "Plotly and Shiny dashboard"
+title: "Plotly and Shiny Dashboard"
 ---
 
 ### 

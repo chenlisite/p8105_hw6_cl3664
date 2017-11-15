@@ -31,7 +31,7 @@ cart%>%
   filter(department != "missing")%>%
   group_by(department)%>%
   mutate(sales = n())%>%
-  distinct(department,sales)%>%
+  distinct(department,.keep_all=TRUE)%>%
   ungroup(department)%>%
   mutate(department = fct_reorder(as.factor(department),sales))%>%
   mutate(hover=str_c(department," Sales:$",sales))%>%
@@ -49,8 +49,9 @@ cart%>%
   filter(department != "missing")%>%
   mutate(order_dow = order_dow+1)%>%
   group_by(order_dow, department)%>%
-  mutate(sales = n())%>%
-  plot_ly(x=~order_dow, y=~sales, type = "scatter", color = ~department, mode = "line")
+  mutate(sales = n(),
+         hover = str_c(department))%>%
+  plot_ly(x=~order_dow, y=~sales, type = "scatter", color = ~department, text = ~hover, mode = "line")
 ```
 
 

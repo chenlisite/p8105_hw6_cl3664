@@ -1,0 +1,10 @@
+name: shiny_dashboard_template
+title:
+username:
+account: chenli
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 235667
+bundleId: 1076152
+url: https://chenli.shinyapps.io/shiny_dashboard_template/
+when: 1510722799.49224

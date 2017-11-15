@@ -14,13 +14,28 @@ library(forcats)
 library(viridis)
 library(plotly)
 library(flexdashboard)
+library(shiny)
 ```
 
 Column {.sidebar}
 -----------------------------------------------------------------------
+```{r read}
+cart = read_csv("./data/instacart_train_data.csv.zip")
+
+```
 
 ```{r}
+max_order = cart %>% distinct(add_to_cart_order) %>% max()
+min_order = cart %>% distinct(add_to_cart_order) %>% min()
+sliderInput("order_range", label = h3("Choose order of adding to cart"), min = min_order, 
+        max = max_order, value = c(1, 80))
 
+```
+
+```{r}
+interval = cart %>% distinct(days_since_prior_order) %>% pull()
+selectInput("interval_choice", label = h3("Select purchase interval"),
+            choices = interval, selected = "10")
 ```
 
 
@@ -29,20 +44,18 @@ Row
 
 ### Chart A
 
-```{r read}
-cart = read_csv("./data/instacart_train_data.csv.zip")
-
-```
-
 ```{r}
 renderPlotly({
   cart%>%
-  filter(department != "missing")%>%
+   filter(days_since_prior_order == input$interval_choice, 
+           add_to_cart_order %in% input$order_range[1]:input$order_range[2]) %>%
+   filter(department != "missing")%>%
   group_by(department)%>%
   mutate(sales = n())%>%
-  distinct(department,sales)%>%
+  distinct(department,.keep_all=TRUE)%>%
   ungroup(department)%>%
-  mutate(department = fct_reorder(as.factor(department),sales))%>%
+       
+    mutate(department = fct_reorder(as.factor(department),sales))%>%
   mutate(hover=str_c(department," Sales:$",sales))%>%
   plot_ly(x = ~department, y = ~sales, type = "bar", color=~department, text=~hover, alpha = 0.5)
 })
@@ -56,11 +69,14 @@ Row {.tabset .tabset-fade}
 ```{r}
 renderPlotly({
 cart%>%
+       filter(days_since_prior_order == input$interval_choice, 
+           add_to_cart_order %in% input$order_range[1]:input$order_range[2]) %>%
   filter(department != "missing")%>%
   mutate(order_dow = order_dow+1)%>%
   group_by(order_dow, department)%>%
-  mutate(sales = n())%>%
-  plot_ly(x=~order_dow, y=~sales, type = "scatter", color = ~department, mode = "line")
+  mutate(sales = n(),
+         hover = str_c(department))%>%
+  plot_ly(x=~order_dow, y=~sales, type = "scatter", color = ~department, text = ~hover, mode = "line")
 })
 ```
 
@@ -69,6 +85,8 @@ cart%>%
 ```{r}
 renderPlotly({
   cart%>%
+       filter(days_since_prior_order == input$interval_choice, 
+           add_to_cart_order %in% input$order_range[1]:input$order_range[2]) %>%
   filter(department != "missing")%>%
   group_by(department)%>%
   mutate(median_hour=median(order_hour_of_day))%>%

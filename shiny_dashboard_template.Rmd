@@ -1,0 +1,80 @@
+---
+title: "Instacart Shiny Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: row
+  runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(janitor)
+library(stringr)
+library(forcats)
+library(viridis)
+library(plotly)
+library(flexdashboard)
+```
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+```{r}
+
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r read}
+cart = read_csv("./data/instacart_train_data.csv.zip")
+
+```
+
+```{r}
+renderPlotly({
+  cart%>%
+  filter(department != "missing")%>%
+  group_by(department)%>%
+  mutate(sales = n())%>%
+  distinct(department,sales)%>%
+  ungroup(department)%>%
+  mutate(department = fct_reorder(as.factor(department),sales))%>%
+  mutate(hover=str_c(department," Sales:$",sales))%>%
+  plot_ly(x = ~department, y = ~sales, type = "bar", color=~department, text=~hover, alpha = 0.5)
+})
+```
+
+Row {.tabset .tabset-fade}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+renderPlotly({
+cart%>%
+  filter(department != "missing")%>%
+  mutate(order_dow = order_dow+1)%>%
+  group_by(order_dow, department)%>%
+  mutate(sales = n())%>%
+  plot_ly(x=~order_dow, y=~sales, type = "scatter", color = ~department, mode = "line")
+})
+```
+
+### Chart C
+
+```{r}
+renderPlotly({
+  cart%>%
+  filter(department != "missing")%>%
+  group_by(department)%>%
+  mutate(median_hour=median(order_hour_of_day))%>%
+  ungroup(department)%>%
+  mutate(department = fct_reorder(department,median_hour))%>%
+  plot_ly(x = ~department, y = ~order_hour_of_day, type = "box", color=~department, alpha = 0.5)
+})
+```
+
